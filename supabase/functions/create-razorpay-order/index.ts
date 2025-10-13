@@ -24,9 +24,14 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) throw new Error('No user found')
 
-    // Create Razorpay order (LIVE credentials)
-    const razorpayKeyId = 'rzp_live_RSbFlNijiZX0q9'
-    const razorpayKeySecret = 'E2i4sk026wt7Tjp6lVzNlLlr'
+    // Get Razorpay credentials from environment
+    const razorpayKeyId = Deno.env.get('RAZORPAY_KEY_ID')
+    const razorpayKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET')
+    
+    if (!razorpayKeyId || !razorpayKeySecret) {
+      console.error('Missing Razorpay credentials in environment')
+      throw new Error('Server configuration error')
+    }
     
     console.log('Creating order for user:', user.id, 'Amount:', amount, 'Plan:', planName)
     
