@@ -128,9 +128,12 @@ export function GoSuper() {
         name: 'Premium Subscription',
         description: `${selectedPlan.plan_name} Subscription`,
         order_id: orderData.orderId,
+        // Server-side fallback verification even if app is backgrounded (mobile UPI, QR)
+        callback_url: 'https://jvcaoionosquiimjffpm.supabase.co/functions/v1/verify-payment',
+        redirect: true,
         handler: async function (response: any) {
           try {
-            // Verify payment
+            // Client-side verification (desktop/web) remains for instant UX
             const { error: verifyError } = await supabase.functions.invoke('verify-payment', {
               body: {
                 razorpayPaymentId: response.razorpay_payment_id,

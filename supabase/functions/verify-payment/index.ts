@@ -14,31 +14,40 @@ serve(async (req) => {
   }
 
   try {
-    const { razorpayPaymentId, razorpayOrderId, razorpaySignature } = await req.json()
-    
-    // Create client with auth header to get the user
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      throw new Error('No authorization header')
+    // Support JSON body (client handler), form-encoded POST (Razorpay callback), and GET query params (redirect)
+    const contentType = req.headers.get('content-type') || ''
+
+    let razorpayPaymentId = ''
+    let razorpayOrderId = ''
+    let razorpaySignature = ''
+
+    if (req.method === 'POST' && contentType.includes('application/json')) {
+      const body = await req.json()
+      razorpayPaymentId = body.razorpayPaymentId || body.razorpay_payment_id || ''
+      razorpayOrderId = body.razorpayOrderId || body.razorpay_order_id || ''
+      razorpaySignature = body.razorpaySignature || body.razorpay_signature || ''
+    } else if (req.method === 'POST') {
+      const text = await req.text()
+      const params = new URLSearchParams(text)
+      razorpayPaymentId = params.get('razorpay_payment_id') || ''
+      razorpayOrderId = params.get('razorpay_order_id') || ''
+      razorpaySignature = params.get('razorpay_signature') || ''
+    } else {
+      const url = new URL(req.url)
+      razorpayPaymentId = url.searchParams.get('razorpay_payment_id') || ''
+      razorpayOrderId = url.searchParams.get('razorpay_order_id') || ''
+      razorpaySignature = url.searchParams.get('razorpay_signature') || ''
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
-    )
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
-    
-    if (userError || !user) {
-      console.error('Auth error:', userError)
-      throw new Error('Authentication failed')
+    if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
+      throw new Error('Missing Razorpay parameters')
     }
-    
-    console.log('Verifying payment for user:', user.id, 'Payment ID:', razorpayPaymentId)
+
+    console.log('Verifying payment. Order:', razorpayOrderId, 'Payment:', razorpayPaymentId)
+
     // Verify signature (LIVE credentials)
     const razorpayKeySecret = 'E2i4sk026wt7Tjp6lVzNlLlr'
-    const body = razorpayOrderId + "|" + razorpayPaymentId
+    const body = razorpayOrderId + '|' + razorpayPaymentId
     const expectedSignature = createHmac('sha256', razorpayKeySecret)
       .update(body.toString())
       .digest('hex')
@@ -56,19 +65,26 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    // Get payment record
+    // Get payment record by order id
     const { data: paymentRecord, error: paymentError } = await supabaseAdmin
       .from('payment_history')
       .select('*')
       .eq('razorpay_order_id', razorpayOrderId)
-      .single()
+      .maybeSingle()
 
     if (paymentError || !paymentRecord) {
-      console.error('Payment record not found:', paymentError)
+      console.error('Payment record not found for order:', razorpayOrderId, paymentError)
       throw new Error('Payment record not found')
     }
 
-    console.log('Payment record found:', paymentRecord.id, 'Duration:', paymentRecord.plan_duration_months, 'months')
+    // Idempotency: if already completed, just return success
+    if (paymentRecord.payment_status === 'completed') {
+      console.log('Payment already completed for order:', razorpayOrderId)
+      return new Response(
+        JSON.stringify({ success: true, message: 'Already processed' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
+      )
+    }
 
     // Update payment record with payment details
     const { error: updateError } = await supabaseAdmin
@@ -77,7 +93,7 @@ serve(async (req) => {
         razorpay_payment_id: razorpayPaymentId,
         razorpay_signature: razorpaySignature,
         payment_status: 'completed',
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
       .eq('razorpay_order_id', razorpayOrderId)
 
@@ -90,9 +106,9 @@ serve(async (req) => {
 
     // Update user subscription using the database function
     const { error: rpcError } = await supabaseAdmin.rpc('update_user_subscription', {
-      p_user_id: user.id,
+      p_user_id: paymentRecord.user_id,
       p_duration_months: paymentRecord.plan_duration_months,
-      p_payment_id: razorpayPaymentId
+      p_payment_id: razorpayPaymentId,
     })
 
     if (rpcError) {
@@ -100,11 +116,11 @@ serve(async (req) => {
       throw new Error('Failed to update subscription: ' + rpcError.message)
     }
 
-    console.log('Subscription updated successfully for user:', user.id)
+    console.log('Subscription updated successfully for user:', paymentRecord.user_id)
 
     return new Response(
       JSON.stringify({ success: true, message: 'Payment verified and subscription updated' }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       },
@@ -112,8 +128,8 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in verify-payment:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
+      JSON.stringify({ error: (error as Error).message || 'Unknown error' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       },
