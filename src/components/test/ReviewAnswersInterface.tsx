@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, Bookmark, X } from "lucide-react";
 import { LaTeXRenderer } from "./LaTeXRenderer";
+import { DiagramRenderer } from "./DiagramRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -20,6 +21,7 @@ interface Question {
   skipped_marks: number;
   partial_marks?: number;
   time_minutes: number;
+  diagram_json?: any;
 }
 
 interface ReviewAnswersInterfaceProps {
@@ -217,9 +219,17 @@ export function ReviewAnswersInterface({
             <Card>
               <CardContent className="pt-6">
                 <LaTeXRenderer 
-                  content={currentQuestion.question_statement} 
+                  content={currentQuestion.question_statement}
                   className="text-base leading-relaxed"
                 />
+                
+                {/* Diagram Renderer */}
+                {currentQuestion.diagram_json && (
+                  <DiagramRenderer 
+                    diagramData={currentQuestion.diagram_json} 
+                    className="mt-4"
+                  />
+                )}
               </CardContent>
             </Card>
 

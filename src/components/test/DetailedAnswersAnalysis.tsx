@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Bookmark, X } from "lucide-react";
 import { LaTeXRenderer } from "./LaTeXRenderer";
+import { DiagramRenderer } from "./DiagramRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -27,6 +28,7 @@ interface Question {
   partial_marks?: number;
   time_minutes: number;
   part?: string;
+  diagram_json?: any;
 }
 
 interface DetailedAnswersAnalysisProps {
@@ -247,6 +249,14 @@ export function DetailedAnswersAnalysis({
                 content={currentQuestion.question_statement} 
                 className="text-base leading-relaxed"
               />
+              
+              {/* Diagram Renderer */}
+              {currentQuestion.diagram_json && (
+                <DiagramRenderer 
+                  diagramData={currentQuestion.diagram_json} 
+                  className="mt-4"
+                />
+              )}
             </CardContent>
           </Card>
 

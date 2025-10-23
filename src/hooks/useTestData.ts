@@ -15,6 +15,7 @@ interface TestQuestion {
   partial_marks?: number;
   time_minutes: number;
   part?: string | null;
+  diagram_json?: any;
 }
 
 interface MockTest {
@@ -201,6 +202,7 @@ export function useTestData() {
           partial_marks: q.partial_marks,
           time_minutes: q.time_minutes,
           part: q.part,
+          diagram_json: q.diagram_json,
         });
       });
       setTestSeries(testSeriesMap);
