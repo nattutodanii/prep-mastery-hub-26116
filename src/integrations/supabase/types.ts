@@ -247,13 +247,13 @@ export type Database = {
           course_comparison: string | null
           course_curriculum: string | null
           course_overview: string | null
-          created_at: string
+          created_at: string | null
           day_in_life: string | null
           degree_type: string | null
           description: string | null
           duration: string | null
           entrance_exam_details: string | null
-          exam_id: string
+          exam_id: string | null
           exam_pattern: string | null
           freemium_group: string | null
           full_length_mocks: string | null
@@ -262,7 +262,7 @@ export type Database = {
           intake_capacity: string | null
           is_calculator: boolean | null
           is_parts: boolean | null
-          name: string
+          name: string | null
           notes: string | null
           placement_statistics: string | null
           premium_group: string | null
@@ -273,6 +273,8 @@ export type Database = {
           skills_learning_outcomes: string | null
           syllabus: string | null
           test_parts: Json | null
+          time: number | null
+          updated_at: string | null
         }
         Insert: {
           admission_procedure?: string | null
@@ -283,13 +285,13 @@ export type Database = {
           course_comparison?: string | null
           course_curriculum?: string | null
           course_overview?: string | null
-          created_at?: string
+          created_at?: string | null
           day_in_life?: string | null
           degree_type?: string | null
           description?: string | null
           duration?: string | null
           entrance_exam_details?: string | null
-          exam_id: string
+          exam_id?: string | null
           exam_pattern?: string | null
           freemium_group?: string | null
           full_length_mocks?: string | null
@@ -298,7 +300,7 @@ export type Database = {
           intake_capacity?: string | null
           is_calculator?: boolean | null
           is_parts?: boolean | null
-          name: string
+          name?: string | null
           notes?: string | null
           placement_statistics?: string | null
           premium_group?: string | null
@@ -309,6 +311,8 @@ export type Database = {
           skills_learning_outcomes?: string | null
           syllabus?: string | null
           test_parts?: Json | null
+          time?: number | null
+          updated_at?: string | null
         }
         Update: {
           admission_procedure?: string | null
@@ -319,13 +323,13 @@ export type Database = {
           course_comparison?: string | null
           course_curriculum?: string | null
           course_overview?: string | null
-          created_at?: string
+          created_at?: string | null
           day_in_life?: string | null
           degree_type?: string | null
           description?: string | null
           duration?: string | null
           entrance_exam_details?: string | null
-          exam_id?: string
+          exam_id?: string | null
           exam_pattern?: string | null
           freemium_group?: string | null
           full_length_mocks?: string | null
@@ -334,7 +338,7 @@ export type Database = {
           intake_capacity?: string | null
           is_calculator?: boolean | null
           is_parts?: boolean | null
-          name?: string
+          name?: string | null
           notes?: string | null
           placement_statistics?: string | null
           premium_group?: string | null
@@ -345,6 +349,8 @@ export type Database = {
           skills_learning_outcomes?: string | null
           syllabus?: string | null
           test_parts?: Json | null
+          time?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -455,6 +461,7 @@ export type Database = {
           short_description: string | null
           short_notes: string | null
           syllabus: string | null
+          updated_at: string | null
           why_choose: string | null
         }
         Insert: {
@@ -489,6 +496,7 @@ export type Database = {
           short_description?: string | null
           short_notes?: string | null
           syllabus?: string | null
+          updated_at?: string | null
           why_choose?: string | null
         }
         Update: {
@@ -523,6 +531,7 @@ export type Database = {
           short_description?: string | null
           short_notes?: string | null
           syllabus?: string | null
+          updated_at?: string | null
           why_choose?: string | null
         }
         Relationships: []
@@ -532,6 +541,7 @@ export type Database = {
           created_at: string
           current_price: number
           discount_percentage: number
+          expiry_date: string | null
           features: Json
           id: string
           original_price: number
@@ -544,6 +554,7 @@ export type Database = {
           created_at?: string
           current_price: number
           discount_percentage: number
+          expiry_date?: string | null
           features: Json
           id?: string
           original_price: number
@@ -556,6 +567,7 @@ export type Database = {
           created_at?: string
           current_price?: number
           discount_percentage?: number
+          expiry_date?: string | null
           features?: Json
           id?: string
           original_price?: number
@@ -998,28 +1010,37 @@ export type Database = {
       }
       subjects: {
         Row: {
-          course_id: string
-          created_at: string
+          course_id: string | null
+          created_at: string | null
           description: string | null
           id: string
-          name: string
-          order_index: number
+          name: string | null
+          order_index: number | null
+          parts: string | null
+          slots: string | null
+          updated_at: string | null
         }
         Insert: {
-          course_id: string
-          created_at?: string
+          course_id?: string | null
+          created_at?: string | null
           description?: string | null
           id?: string
-          name: string
-          order_index?: number
+          name?: string | null
+          order_index?: number | null
+          parts?: string | null
+          slots?: string | null
+          updated_at?: string | null
         }
         Update: {
-          course_id?: string
-          created_at?: string
+          course_id?: string | null
+          created_at?: string | null
           description?: string | null
           id?: string
-          name?: string
-          order_index?: number
+          name?: string | null
+          order_index?: number | null
+          parts?: string | null
+          slots?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1339,6 +1360,7 @@ export type Database = {
           solution: string
           test_name: string
           time_minutes: number
+          unit_id: string | null
         }
         Insert: {
           answer: string
@@ -1356,6 +1378,7 @@ export type Database = {
           solution: string
           test_name: string
           time_minutes?: number
+          unit_id?: string | null
         }
         Update: {
           answer?: string
@@ -1373,6 +1396,7 @@ export type Database = {
           solution?: string
           test_name?: string
           time_minutes?: number
+          unit_id?: string | null
         }
         Relationships: [
           {
@@ -1380,6 +1404,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_questions_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
@@ -1561,6 +1592,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_expired_subscriptions: { Args: never; Returns: undefined }
+      check_subscription_expiry: { Args: never; Returns: undefined }
       update_user_subscription: {
         Args: {
           p_duration_months: number
