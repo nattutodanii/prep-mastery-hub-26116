@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, ChevronLeft, ChevronRight, Flag, Send, Calculator as CalculatorIcon, Trophy, PanelRightOpen, PanelRightClose } from "lucide-react";
 import { LaTeXRenderer } from "./LaTeXRenderer";
+import { DiagramRenderer } from "./DiagramRenderer";
 import { Calculator } from "@/components/ui/calculator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,6 +28,7 @@ interface Question {
   partial_marks?: number;
   time_minutes: number;
   part?: string;
+  diagram_json?: any;
 }
 
 interface TestInterfaceProps {
@@ -730,6 +732,14 @@ export function TestInterface({ questions, mode, testName, testType = 'practice'
               content={currentQuestion.question_statement} 
               className="text-base leading-relaxed"
             />
+            
+            {/* Diagram Renderer */}
+            {currentQuestion.diagram_json && (
+              <DiagramRenderer 
+                diagramData={currentQuestion.diagram_json} 
+                className="mt-4"
+              />
+            )}
           </CardContent>
         </Card>
 

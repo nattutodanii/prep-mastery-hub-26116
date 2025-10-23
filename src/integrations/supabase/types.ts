@@ -1349,6 +1349,7 @@ export type Database = {
           correct_marks: number
           course_id: string
           created_at: string
+          diagram_json: Json | null
           id: string
           incorrect_marks: number
           options: Json | null
@@ -1367,6 +1368,7 @@ export type Database = {
           correct_marks?: number
           course_id: string
           created_at?: string
+          diagram_json?: Json | null
           id?: string
           incorrect_marks?: number
           options?: Json | null
@@ -1385,6 +1387,7 @@ export type Database = {
           correct_marks?: number
           course_id?: string
           created_at?: string
+          diagram_json?: Json | null
           id?: string
           incorrect_marks?: number
           options?: Json | null
