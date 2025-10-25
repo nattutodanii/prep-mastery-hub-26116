@@ -22,6 +22,9 @@ interface Question {
   partial_marks?: number;
   time_minutes: number;
   diagram_json?: any;
+  options_diagrams?: any;
+  answer_diagram?: any;
+  solution_diagram?: any;
 }
 
 interface ReviewAnswersInterfaceProps {
@@ -240,9 +243,17 @@ export function ReviewAnswersInterface({
                   <h4 className="font-semibold mb-3">Options:</h4>
                   <div className="space-y-2">
                     {currentQuestion.options.map((option, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 rounded border">
-                        <span className="font-medium">{String.fromCharCode(65 + index)}.</span>
-                        <LaTeXRenderer content={option} />
+                      <div key={index} className="flex flex-col space-y-2">
+                        <div className="flex items-center gap-2 p-2 rounded border">
+                          <span className="font-medium">{String.fromCharCode(65 + index)}.</span>
+                          <LaTeXRenderer content={option} />
+                        </div>
+                        {currentQuestion.options_diagrams?.[index] && (
+                          <DiagramRenderer 
+                            diagramData={currentQuestion.options_diagrams[index]} 
+                            className="ml-6"
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
@@ -272,6 +283,12 @@ export function ReviewAnswersInterface({
                     <h4 className="font-semibold mb-2">Correct Answer:</h4>
                     <div className="bg-white p-3 rounded border">
                       <LaTeXRenderer content={currentQuestion.answer} className="text-sm" />
+                      {currentQuestion.answer_diagram && (
+                        <DiagramRenderer 
+                          diagramData={currentQuestion.answer_diagram} 
+                          className="mt-2"
+                        />
+                      )}
                     </div>
                   </div>
                   
@@ -281,6 +298,12 @@ export function ReviewAnswersInterface({
                       content={currentQuestion.solution} 
                       className="text-sm leading-relaxed"
                     />
+                    {currentQuestion.solution_diagram && (
+                      <DiagramRenderer 
+                        diagramData={currentQuestion.solution_diagram} 
+                        className="mt-4"
+                      />
+                    )}
                   </div>
                 </div>
               </CardContent>

@@ -29,6 +29,9 @@ interface Question {
   time_minutes: number;
   part?: string;
   diagram_json?: any;
+  options_diagrams?: any;
+  answer_diagram?: any;
+  solution_diagram?: any;
 }
 
 interface DetailedAnswersAnalysisProps {
@@ -269,11 +272,19 @@ export function DetailedAnswersAnalysis({
               <CardContent>
                 <div className="space-y-3">
                   {currentQuestion.options.map((option, index) => (
-                    <div key={index} className="flex items-center space-x-2 p-2 rounded border">
-                      <div className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-sm font-medium">
-                        {String.fromCharCode(65 + index)}
+                    <div key={index} className="flex flex-col space-y-2">
+                      <div className="flex items-center space-x-2 p-2 rounded border">
+                        <div className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-sm font-medium">
+                          {String.fromCharCode(65 + index)}
+                        </div>
+                        <LaTeXRenderer content={option} />
                       </div>
-                      <LaTeXRenderer content={option} />
+                      {currentQuestion.options_diagrams?.[index] && (
+                        <DiagramRenderer 
+                          diagramData={currentQuestion.options_diagrams[index]} 
+                          className="ml-8"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -317,6 +328,12 @@ export function DetailedAnswersAnalysis({
                 <CardContent>
                   <div className="p-3 bg-white rounded border">
                     <LaTeXRenderer content={currentQuestion.answer} className="text-base" />
+                    {currentQuestion.answer_diagram && (
+                      <DiagramRenderer 
+                        diagramData={currentQuestion.answer_diagram} 
+                        className="mt-2"
+                      />
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -330,6 +347,12 @@ export function DetailedAnswersAnalysis({
                     content={currentQuestion.solution} 
                     className="text-base leading-relaxed"
                   />
+                  {currentQuestion.solution_diagram && (
+                    <DiagramRenderer 
+                      diagramData={currentQuestion.solution_diagram} 
+                      className="mt-4"
+                    />
+                  )}
                 </CardContent>
               </Card>
             </>

@@ -108,6 +108,10 @@ export function DiagramRenderer({ diagramData, className = '' }: DiagramRenderer
             ctx.lineTo(element.x + points[i][0], element.y + points[i][1]);
           }
           ctx.stroke();
+        } else if (element.type === 'text') {
+          ctx.fillStyle = element.strokeColor || '#000000';
+          ctx.font = `${element.fontSize || 14}px ${element.fontFamily === 1 ? 'Arial' : 'sans-serif'}`;
+          ctx.fillText(element.text || '', element.x, element.y);
         }
       } catch (error) {
         console.error('Error rendering element:', element, error);

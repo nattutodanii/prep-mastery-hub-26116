@@ -1346,6 +1346,7 @@ export type Database = {
       test_questions: {
         Row: {
           answer: string
+          answer_diagram: Json | null
           correct_marks: number
           course_id: string
           created_at: string
@@ -1353,18 +1354,21 @@ export type Database = {
           id: string
           incorrect_marks: number
           options: Json | null
+          options_diagrams: Json | null
           part: string | null
           partial_marks: number | null
           question_statement: string
           question_type: Database["public"]["Enums"]["question_type"]
           skipped_marks: number
           solution: string
+          solution_diagram: Json | null
           test_name: string
           time_minutes: number
           unit_id: string | null
         }
         Insert: {
           answer: string
+          answer_diagram?: Json | null
           correct_marks?: number
           course_id: string
           created_at?: string
@@ -1372,18 +1376,21 @@ export type Database = {
           id?: string
           incorrect_marks?: number
           options?: Json | null
+          options_diagrams?: Json | null
           part?: string | null
           partial_marks?: number | null
           question_statement: string
           question_type: Database["public"]["Enums"]["question_type"]
           skipped_marks?: number
           solution: string
+          solution_diagram?: Json | null
           test_name: string
           time_minutes?: number
           unit_id?: string | null
         }
         Update: {
           answer?: string
+          answer_diagram?: Json | null
           correct_marks?: number
           course_id?: string
           created_at?: string
@@ -1391,12 +1398,14 @@ export type Database = {
           id?: string
           incorrect_marks?: number
           options?: Json | null
+          options_diagrams?: Json | null
           part?: string | null
           partial_marks?: number | null
           question_statement?: string
           question_type?: Database["public"]["Enums"]["question_type"]
           skipped_marks?: number
           solution?: string
+          solution_diagram?: Json | null
           test_name?: string
           time_minutes?: number
           unit_id?: string | null

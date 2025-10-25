@@ -16,6 +16,9 @@ interface TestQuestion {
   time_minutes: number;
   part?: string | null;
   diagram_json?: any;
+  options_diagrams?: any;
+  answer_diagram?: any;
+  solution_diagram?: any;
 }
 
 interface MockTest {
@@ -203,6 +206,9 @@ export function useTestData() {
           time_minutes: q.time_minutes,
           part: q.part,
           diagram_json: q.diagram_json,
+          options_diagrams: q.options_diagrams,
+          answer_diagram: q.answer_diagram,
+          solution_diagram: q.solution_diagram,
         });
       });
       setTestSeries(testSeriesMap);

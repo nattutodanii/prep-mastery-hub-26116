@@ -29,6 +29,9 @@ interface Question {
   time_minutes: number;
   part?: string;
   diagram_json?: any;
+  options_diagrams?: any;
+  answer_diagram?: any;
+  solution_diagram?: any;
 }
 
 interface TestInterfaceProps {
@@ -753,11 +756,19 @@ export function TestInterface({ questions, mode, testName, testType = 'practice'
                 disabled={mode === 'practice' && showSolution}
               >
                 {currentQuestion.options.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <RadioGroupItem value={option} id={`option-${index}`} />
-                    <Label htmlFor={`option-${index}`} className="cursor-pointer">
-                      <LaTeXRenderer content={option} />
-                    </Label>
+                  <div key={index} className="flex flex-col space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value={option} id={`option-${index}`} />
+                      <Label htmlFor={`option-${index}`} className="cursor-pointer">
+                        <LaTeXRenderer content={option} />
+                      </Label>
+                    </div>
+                    {currentQuestion.options_diagrams?.[index] && (
+                      <DiagramRenderer 
+                        diagramData={currentQuestion.options_diagrams[index]} 
+                        className="ml-6"
+                      />
+                    )}
                   </div>
                 ))}
               </RadioGroup>
@@ -766,22 +777,30 @@ export function TestInterface({ questions, mode, testName, testType = 'practice'
             {currentQuestion.question_type === 'MSQ' && currentQuestion.options && (
               <div className="space-y-3">
                 {currentQuestion.options.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`option-${index}`}
-                      checked={(currentAnswer?.answer as string[] || []).includes(option)}
-                      onCheckedChange={(checked) => {
-                        const currentAnswers = (currentAnswer?.answer as string[]) || [];
-                        const newAnswers = checked
-                          ? [...currentAnswers, option]
-                          : currentAnswers.filter(ans => ans !== option);
-                        handleAnswerChange(newAnswers);
-                      }}
-                      disabled={mode === 'practice' && showSolution}
-                    />
-                    <Label htmlFor={`option-${index}`} className="cursor-pointer">
-                      <LaTeXRenderer content={option} />
-                    </Label>
+                  <div key={index} className="flex flex-col space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`option-${index}`}
+                        checked={(currentAnswer?.answer as string[] || []).includes(option)}
+                        onCheckedChange={(checked) => {
+                          const currentAnswers = (currentAnswer?.answer as string[]) || [];
+                          const newAnswers = checked
+                            ? [...currentAnswers, option]
+                            : currentAnswers.filter(ans => ans !== option);
+                          handleAnswerChange(newAnswers);
+                        }}
+                        disabled={mode === 'practice' && showSolution}
+                      />
+                      <Label htmlFor={`option-${index}`} className="cursor-pointer">
+                        <LaTeXRenderer content={option} />
+                      </Label>
+                    </div>
+                    {currentQuestion.options_diagrams?.[index] && (
+                      <DiagramRenderer 
+                        diagramData={currentQuestion.options_diagrams[index]} 
+                        className="ml-6"
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -832,6 +851,12 @@ export function TestInterface({ questions, mode, testName, testType = 'practice'
                     <h4 className="font-semibold mb-2">Correct Answer:</h4>
                     <div className="bg-white p-3 rounded border">
                       <LaTeXRenderer content={currentQuestion.answer} className="text-sm" />
+                      {currentQuestion.answer_diagram && (
+                        <DiagramRenderer 
+                          diagramData={currentQuestion.answer_diagram} 
+                          className="mt-2"
+                        />
+                      )}
                     </div>
                   </div>
                 
@@ -841,6 +866,12 @@ export function TestInterface({ questions, mode, testName, testType = 'practice'
                     content={currentQuestion.solution} 
                     className="text-sm leading-relaxed"
                   />
+                  {currentQuestion.solution_diagram && (
+                    <DiagramRenderer 
+                      diagramData={currentQuestion.solution_diagram} 
+                      className="mt-4"
+                    />
+                  )}
                 </div>
               </div>
             </CardContent>
